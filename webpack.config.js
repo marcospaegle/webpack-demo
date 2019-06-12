@@ -1,20 +1,28 @@
 const webpack = require('webpack');
 const path = require('path');
 const glob = require('glob');
+
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PurgecssPlugin = require('purgecss-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+const inProduction = (process.env.NODE_ENV === 'production') ? true : false;
 
 module.exports = {
-    mode: (process.env.NODE_ENV === 'production') ? process.env.NODE_ENV : 'development',
+    mode: process.env.NODE_ENV,
     entry: {
         app: [
             './src/js/app.js',
             './src/scss/app.scss'
+        ],
+        vendor: [
+            './src/js/vendor.js',
+            './src/scss/vendor.scss'
         ]
     },
     output: {
         path: path.resolve(__dirname, './public/assets/js'),
-        filename: '[name].[hash].js'
+        filename: '[name].[chunkhash].js'
     },
     module: {
         rules: [
@@ -35,20 +43,33 @@ module.exports = {
                 test: /\.(png|jpe?g|gif|svg)$/,
                 loader: 'file-loader',
                 options: {
-                    name: '../images/[name].[hash].[ext]'
+                    name: '../images/[name].[ext]'
                 }
             }
         ]
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: '../css/[name].[hash].css'
+            filename: '../css/[name].[chunkhash].css'
         }),
         new webpack.LoaderOptionsPlugin({
-            minimize: (process.env.NODE_ENV === 'production') ? true : false
+            minimize: inProduction
         }),
         new PurgecssPlugin({
-            paths: glob.sync(`${path.join(__dirname, 'public')}/**/*`, {nodir: true})
-        })
+            paths: glob.sync(`${path.join(__dirname, 'public')}/**/*`, {nodir: true}),
+            minimize: inProduction
+        }),
+        new CleanWebpackPlugin({
+            verbose: true,
+            dry: false
+        }),
+        function() {
+            this.plugin('done', stats => {
+                require('fs').writeFileSync(
+                    path.join(__dirname, 'public/manifest.json'),
+                    JSON.stringify(stats.toJson().assetsByChunkName)
+                );
+            });
+        } 
     ]
 };
