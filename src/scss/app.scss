@@ -1,9 +1,7 @@
 $primary: red;
+$backgroundImage: '../images/glasses.svg';
 
 body {
     background-color: $primary;
-}
-
-.my-img-bg {
-    background-image: url('../images/glasses.svg');
+    background-image: url($backgroundImage);
 }
