@@ -40,12 +40,9 @@ module.exports = {
                 loader: 'babel-loader'
             },
             {
-                test: /\.(png|jpe?g|gif|svg)$/,
-                loader: 'file-loader',
-                options: {
-                    name: '../images/[name].[ext]'
-                }
-            }
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                use: 'raw-loader'
+              }
         ]
     },
     plugins: [

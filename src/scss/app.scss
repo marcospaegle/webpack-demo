@@ -1,12 +1,8 @@
 $primary: red;
-$backgroundImage: '../images/glasses.svg';
+$backgroundImage: '../images/Vandal_Hearts_Coverart.png';
 
 body {
     background-color: $primary;
     background-image: url($backgroundImage);
 }
 
-.unused {
-    background-color: $primary;
-    background-image: url($backgroundImage);
-}
